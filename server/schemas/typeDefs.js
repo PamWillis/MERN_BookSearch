@@ -1,4 +1,4 @@
-const typeDefs = `
+const typeDefs = `#graphql
   type User {
     _id: ID
     username: String
@@ -10,8 +10,8 @@ const typeDefs = `
     author: [String]
     description: String
     title: String
-    image: Url
-    link: Url
+    image: String
+    link: String
   }
   type Auth {
     token: String
@@ -27,15 +27,12 @@ const typeDefs = `
   }
 
   type Query {
-    username: String
-    email: String
-    bookCount: Int
-   user(id: ID!): User
+    me: User
   }
   type Mutation {
     login(email: String!, password: String!): Auth
     addUser(username: String!, email: String!, password: String!): Auth
-    addBook(book: BookInput:) User
+    addBook(book: BookInput!): User
     removeBook(_bookid: Int!): User
   }
   `;

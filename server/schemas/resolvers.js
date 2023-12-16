@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const resolvers = {
     Query: {
-        users: async () => {
+       me: async () => {
             return await User.find({}).populate('users')
         }
     },
