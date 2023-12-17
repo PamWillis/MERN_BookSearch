@@ -17,7 +17,7 @@ const resolvers = {
             // Create and user
             const user = await User.create({ username, email, password });
             //to reduce friction for the user, we immiately sign a JSON Web Token and log the user in after they are created
-            const token = singleToken(user);
+            const token = signToken(user);
             //Return an `Auth` object that consists of the signed token and user's information
             return { token, user };
         },
