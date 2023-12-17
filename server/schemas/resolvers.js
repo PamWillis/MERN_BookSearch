@@ -1,6 +1,6 @@
 const { User } = require('../models');
 const jwt = require('jsonwebtoken');
-const secret = 'mysecretssshhhhhhh';
+const secret = process.env.SECRET;
 const expiration = '2h';
 
 
@@ -45,6 +45,31 @@ const resolvers = {
             return { token, user };
 
         },
+           // Add a third argument to the resolver to access data in our `context`
+    addBook: async (parent, { profileId, book }, context) => {
+        // If context has a `user` property, that means the user executing this mutation has a valid JWT and is logged in
+        if (context.user) {
+          return User.findOneAndUpdate(
+            { _id: profileId },
+            {
+              $addToSet: { books: book },
+            },
+            {
+              new: true,
+              runValidators: true,
+            }
+          );
+        }
+        // If user attempts to execute this mutation and isn't logged in, throw an error
+        throw AuthenticationError;
+      },
+      // Set up mutation so a logged in user can only remove their profile and no one else's
+      removeBook: async (parent, args, context) => {
+        if (context.user) {
+          return User.findOneAndDelete({ _id: context.user._id });
+        }
+        throw AuthenticationError;
+      },
     },
 };
 function signToken({ email, username, _id }) {
