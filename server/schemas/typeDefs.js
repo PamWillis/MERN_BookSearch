@@ -17,6 +17,10 @@ const typeDefs = `#graphql
     token: String
     user: User
   }
+  type AuthenticationError {
+  message: String!
+  code: String!
+}
   input BookInput {
     author: [String!]!
     description: String!
