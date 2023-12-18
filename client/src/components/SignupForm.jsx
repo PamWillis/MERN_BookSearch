@@ -33,6 +33,7 @@ const SignupForm = () => {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
     console.log(formState);
+    console.log(data)
   
     // check if form has everything (as per react-bootstrap docs)
     try {
@@ -43,6 +44,7 @@ const SignupForm = () => {
       Auth.login(data.addUser.token);
     } catch (e) {
       console.error(e);
+
     }
   };
 
