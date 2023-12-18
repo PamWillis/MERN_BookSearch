@@ -33,13 +33,13 @@ const SignupForm = () => {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
     console.log(formState);
-
+  
     // check if form has everything (as per react-bootstrap docs)
     try {
       const { data } = await addUser({
         variables: { ...formState },
       });
-
+  
       Auth.login(data.addUser.token);
     } catch (e) {
       console.error(e);
@@ -48,12 +48,14 @@ const SignupForm = () => {
 
   return (
     <>
+
       {/* This is needed for the validation functionality above */}
       <Form noValidate validated={validated} onSubmit={handleFormSubmit}>
         {/* show alert if server response is bad */}
         <Alert dismissible onClose={() => setShowAlert(false)} show={showAlert} variant='danger'>
           Something went wrong with your signup!
         </Alert>
+        
 
         <Form.Group className='mb-3'>
           <Form.Label htmlFor='username'>Username</Form.Label>
@@ -62,7 +64,7 @@ const SignupForm = () => {
             placeholder='Your username'
             name='username'
             onChange={handleInputChange}
-            value={FormData.username}
+            value={formState.username}
             required
           />
           <Form.Control.Feedback type='invalid'>Username is required!</Form.Control.Feedback>
@@ -75,7 +77,7 @@ const SignupForm = () => {
             placeholder='Your email address'
             name='email'
             onChange={handleInputChange}
-            value={FormData.email}
+            value={formState.email}
             required
           />
           <Form.Control.Feedback type='invalid'>Email is required!</Form.Control.Feedback>
@@ -88,20 +90,25 @@ const SignupForm = () => {
             placeholder='Your password'
             name='password'
             onChange={handleInputChange}
-            value={FormData.password}
+            value={formState.password}
             required
           />
           <Form.Control.Feedback type='invalid'>Password is required!</Form.Control.Feedback>
         </Form.Group>
 
         <Button
-          disabled={!(FormData.username && FormData.email && FormData.password)}
+          disabled={!(formState.username && formState.email && formState.password)}
           type='submit'
           variant='success'
         >
           Submit
         </Button>
       </Form>
+      {error && (
+              <div className="my-3 p-3 bg-danger text-white">
+                {error.message}
+              </div>
+            )}
     </>
   );
 };
