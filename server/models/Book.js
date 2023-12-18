@@ -26,6 +26,9 @@ String,
     type: String,
     required: true,
   },
-});
+}
+);
+
+
 
 module.exports = bookSchema;

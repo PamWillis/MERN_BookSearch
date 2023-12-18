@@ -21,7 +21,7 @@ app.use(express.json());
 
 db.once('open', () => {
   server.start().then(() => {
-    app.use('/graphql', expressMiddleware(server, { context: authMiddleware }));
+    server.applyMiddleware({ app });
 
     if (process.env.NODE_ENV === 'production') {
       app.use(express.static(path.join(__dirname, '../client/build')));

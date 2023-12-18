@@ -4,12 +4,22 @@ const secret = process.env.SECRET;
 const expiration = '2h';
 
 
+
 const resolvers = {
-    Query: {
-        me: async () => {
-            return await User.find({}).populate('users')
-        },
+
+      Query: {
+        me: async (_, __, context) => {
+          if (context.user) {
+            return await User.findById(context.user._id)
+            .populate('username')
+            .populate('email')
+            .populate('password')
+            .populate('savedBooks');
+          };
+          throw new AuthenticationError('You need to be logged in!');
+        }
     },
+      
     // Define the functions that will fulfill the mutations
     Mutation: {
         // Other mutations...
@@ -71,7 +81,7 @@ const resolvers = {
         throw AuthenticationError;
       },
     },
-};
+}
 function signToken({ email, username, _id }) {
     const payload = { email, username, _id };
     return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
