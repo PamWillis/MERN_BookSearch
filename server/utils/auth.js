@@ -1,6 +1,6 @@
 const { GraphQLError } = require('graphql');
 const jwt = require('jsonwebtoken');
-const secret = process.env.SECRET;
+const secret = 'mysecretssshhhhhhh';
 
 // set token secret and expiration date
 
@@ -14,7 +14,7 @@ module.exports = {
   }),
 
     // function for our authenticated routes
-    authMiddleware: function (req) {
+    authMiddleware: function ({req}) {
       // allows token to be sent via  req.body,req.query or headers
       let token = req.body.token || req.query.token || req.headers.authorization;
 
@@ -35,8 +35,7 @@ module.exports = {
         console.log('Invalid token');
       }
 
-      // send to next endpoint
-      next();
+      return req;
     },
     signToken: function ({ username, email, _id }) {
       const payload = { username, email, _id };

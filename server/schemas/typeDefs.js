@@ -5,9 +5,10 @@ const typeDefs = `#graphql
     email: String
     password: String
     bookCount: Int
+    savedBooks: [Book]
   }
   type Book {
-    _bookid: Int
+    bookId: Int
     author: [String]
     description: String
     title: String
@@ -18,15 +19,12 @@ const typeDefs = `#graphql
     token: String
     user: User
   }
-  type AuthenticationError {
-  message: String!
-  code: String!
-}
+
   input BookInput {
     author: [String!]!
     description: String!
     title: String!
-    _bookid: Int!
+    bookId: Int!
     image: String!
     link: String!
   }
@@ -39,7 +37,7 @@ const typeDefs = `#graphql
     login(email: String!, password: String!): Auth
     addUser(username: String!, email: String!, password: String!): Auth
     saveBook(book: BookInput!): User
-    removeBook(_bookid: Int!): User
+    removeBook(bookId: Int!): User
   }
   `;
 

@@ -1,7 +1,5 @@
 const { User } = require('../models');
-const jwt = require('jsonwebtoken');
-const secret = process.env.SECRET;
-const expiration = '2h';
+const { signToken, AuthenticationError } = require('../utils/auth.js')
 
 const resolvers = {
 
@@ -25,52 +23,55 @@ const resolvers = {
       return { token, user };
     },
     login: async (parent, { email, password }) => {
-      // Lookup the user by the provided email address, since the `email` field is unique, we know that only one person will exist with that email
       const user = await User.findOne({ email });
-      // If there is no user with that email address, return an Authentication error stating so
+
       if (!user) {
-        throw new AuthenticationError('Invalid email or password');
+        throw AuthenticationError;
       }
-      // If there is a user found, execute the `isCorrectPassword` instance method and check if the correct password was provided
-      const correctPW = await user.isCorrectPassword(password);
-      // If the password is incorrect, return an Authentication error stating so
-      if (!correctPW) {
-        throw new AuthenticationError('Invalid email or password');
+
+      const correctPw = await user.isCorrectPassword(password);
+
+      if (!correctPw) {
+        throw AuthenticationError;
       }
-      // If email and password are correct, sign the user into the application with a JWT
+
       const token = signToken(user);
-      // Return an `Auth` object that consists of the signed token and user's information
+
       return { token, user };
     },
-    saveBook: async (parent, { userId, book }) => {
-
-      return User.findOneAndUpdate(
-        { _id: userId },
-        {
-          $addToSet: { books: book },
-        },
-        {
-          new: true,
-          runValidators: true,
-        }
-      );
+    saveBook: async (parent, { book }, context) => {
+      if (context.user) {
+        return User.findOneAndUpdate(
+          { _id: context.user._id },
+          {
+            $addToSet: { books: book },
+          },
+          {
+            new: true,
+            runValidators: true,
+          }
+        );
+      }
+      throw AuthenticationError;
     },
 
-    removeBook: async (parent, { usereId, book }) => {
-      return User.findOneAndUpdate(
-        { _id: userId },
-        { 
-          $pull: { books: book } 
-        },
-        { new: true }
-      );
+    removeBook: async (parent, { book }, context) => {
+      if (context.user) {
+        return User.findOneAndUpdate(
+          { _id: context.user._id },
+          {
+            $pull: { book: book },
+          },
+          {
+            new: true,
+            runValidators: true,
+          }
+        );
+      }
+      throw AuthenticationError;
     },
   },
 };
 
-// function signToken({ email, username, _id }) {
-//   const payload = { email, username, _id };
-//   return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
-// }
 
 module.exports = resolvers;
