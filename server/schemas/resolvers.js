@@ -4,35 +4,17 @@ const secret = process.env.SECRET;
 const expiration = '2h';
 
 const resolvers = {
+
   Query: {
     me: async (parent, args, context) => {
-      // Check if the user is authenticated
-      if (!context.user) {
-        throw new Error('Authentication required');
-      }
-      // Assuming a simple database mock or ORM
-      const userId = context.user.id;
-      try {
-        // Fetch user data from the database
-        const userData = await database.getUserById(userId);
-        // You might want to handle cases where the user is not found
-        if (!userData) {
-          throw new Error('User not found');
-        }
-        return userData;
-      } catch (err) {
-        console.log(err);
-        throw new Error('Failed to fetch user data');
-      }
-    },
-    user: async (parent, { userId }) => {
-      return User.findOne({ _id: userId });
-    },
-    users: async () => {
-      return User.find();
-    },
+
+      return await User.findOne({ _id: context.user._id })
+      // .populate('_id')
+
+    }
   },
-  
+
+
   Mutation: {
     addUser: async (parent, { username, email, password }) => {
       // Create a user
@@ -60,35 +42,35 @@ const resolvers = {
       // Return an `Auth` object that consists of the signed token and user's information
       return { token, user };
     },
-    addBook: async (parent, { profileId, book }, context) => {
-      // If context has a `user` property, that means the user executing this mutation has a valid JWT and is logged in
-      if (context.user) {
-        return User.findOneAndUpdate(
-          { _id: profileId },
-          {
-            $addToSet: { books: book },
-          },
-          {
-            new: true,
-            runValidators: true,
-          }
-        );
-      }
-      // If the user attempts to execute this mutation and isn't logged in, throw an error
-      throw new AuthenticationError('Authentication required');
+    saveBook: async (parent, { userId, book }) => {
+
+      return User.findOneAndUpdate(
+        { _id: userId },
+        {
+          $addToSet: { books: book },
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
     },
-    removeBook: async (parent, args, context) => {
-      if (context.user) {
-        return User.findOneAndDelete({ _id: context.user._id });
-      }
-      throw new AuthenticationError('Authentication required');
+
+    removeBook: async (parent, { usereId, book }) => {
+      return User.findOneAndUpdate(
+        { _id: userId },
+        { 
+          $pull: { books: book } 
+        },
+        { new: true }
+      );
     },
   },
 };
 
-function signToken({ email, username, _id }) {
-  const payload = { email, username, _id };
-  return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
-}
+// function signToken({ email, username, _id }) {
+//   const payload = { email, username, _id };
+//   return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
+// }
 
 module.exports = resolvers;
