@@ -2,34 +2,68 @@ import { useMutation } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
 import Auth from '../utils/auth';
 import { Container, Col, Form, Button, Card, Row } from 'react-bootstrap';
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 const SearchBooks = () => {
   const [formState, setFormState] = useState({
-    BookInput: " ",
+    searchInput: "",
   });
 
-  // const [searchInput, setSearchInput] = useState('');
-  // const [searchedBooks, setSearchedBooks] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchedBooks, setSearchedBooks] = useState([]);
+  const [savedBookIds, setSavedBookIds] = useState([]);
+  const [saveBook, { error }] = useMutation(SAVE_BOOK);
 
-  const [saveBook, { error, data }] = useMutation(SAVE_BOOK);
-
-  async function handleSaveBook(event) {
-    const { name, value } = event.target;
-
-    setFormState({
-      ...formState,
-      [name]: value,
-    });
-  };
-  useEffect(() => {
-  async function handleFormSubmit(event) {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
-    console.log(formState);
-  }
-})
+
+    const { searchInput } = formState;
+
+    // Check if there is a value for searchInput, if not, return false
+    if (!searchInput) {
+      return false;
+    }
+
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=${searchInput}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+
+      const bookData = responseData.books.map((book) => ({
+        bookId: book,
+        title: title,
+        authors: authors,
+        description: description,
+        image: imageLinks?.thumbnail,
+      }));
+
+      setSearchedBooks(bookData);
+      setFormState({ ...formState, searchInput: "" });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSaveBook = async (bookId) => {
+    try {
+      const { data } = await saveBook({
+        variables: { bookId },
+      });
+
+      setSavedBookIds([...savedBookIds, data.saveBook.bookId]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
+
     <>
       <div className="text-light bg-dark p-5">
         <Container>
@@ -66,9 +100,9 @@ const SearchBooks = () => {
             return (
               <Col md="4" key={book.bookId}>
                 <Card border='dark'>
-                  {book.image ? (
-                    <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' />
-                  ) : null}
+                {book.imageLinks?.thumbnail && ( 
+                <Card.Img src={book.imageLinks?.thumbnail} alt={`The cover for ${book.title}`} variant='top' />
+              )}
                   <Card.Body>
                     <Card.Title>{book.title}</Card.Title>
                     <p className='small'>Authors: {book.authors}</p>
