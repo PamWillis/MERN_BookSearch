@@ -2,10 +2,11 @@ import { useMutation } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
 import Auth from '../utils/auth';
 import { Container, Col, Form, Button, Card, Row } from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
 
 const SearchBooks = () => {
   const [formState, setFormState] = useState({
-    BookInput: '',
+    BookInput: " ",
   });
 
   // const [searchInput, setSearchInput] = useState('');
@@ -21,11 +22,12 @@ const SearchBooks = () => {
       [name]: value,
     });
   };
-
+  useEffect(() => {
   async function handleFormSubmit(event) {
     event.preventDefault();
     console.log(formState);
   }
+})
 
   return (
     <>
