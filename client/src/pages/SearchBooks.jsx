@@ -1,74 +1,54 @@
-import { useMutation } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
 import Auth from '../utils/auth';
 import { Container, Col, Form, Button, Card, Row } from 'react-bootstrap';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const SearchBooks = () => {
-  const [formState, setFormState] = useState({
-    searchInput: "",
-  });
+  const [saveBook, { loading: saveLoading, error }] = useMutation(SAVE_BOOK);
+  const [searchInput, setSearchInput] = useState('');
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const [searchInput, setSearchInput] = useState("");
-  const [searchedBooks, setSearchedBooks] = useState([]);
-  const [savedBookIds, setSavedBookIds] = useState([]);
-  const [saveBook, { error }] = useMutation(SAVE_BOOK);
-
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
-
-    const { searchInput } = formState;
-
-    // Check if there is a value for searchInput, if not, return false
-    if (!searchInput) {
-      return false;
-    }
+  async function handleSaveBook(bookId) {
+    if (saveLoading) return 'Saving...';
+    if (error) return `Save error! ${error.message}`;
 
     try {
-      const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=${searchInput}`
-      );
+      await saveBook({ variables: { bookId } });
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
-      if (!response.ok) {
-        throw new Error(`Request failed with status: ${response.status}`);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${searchInput}`);
+      const data = await response.json();
+
+      if (data.items) {
+        setBooks(data.items);
+      } else {
+        setBooks([]);
       }
-
-      const responseData = await response.json();
-
-      const bookData = responseData.books.map((book) => ({
-        bookId: book,
-        title: title,
-        authors: authors,
-        description: description,
-        image: imageLinks?.thumbnail,
-      }));
-
-      setSearchedBooks(bookData);
-      setFormState({ ...formState, searchInput: "" });
     } catch (error) {
-      console.error(error);
-    }
-  };
 
-  const handleSaveBook = async (bookId) => {
-    try {
-      const { data } = await saveBook({
-        variables: { bookId },
-      });
-
-      setSavedBookIds([...savedBookIds, data.saveBook.bookId]);
-    } catch (error) {
-      console.error(error);
+      console.error('Error fetching data:', error);
+      setBooks([]);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-
     <>
       <div className="text-light bg-dark p-5">
         <Container>
           <h1>Search for Books!</h1>
-          <Form onSubmit={handleFormSubmit}>
+          <Form onSubmit={handleSubmit}>
             <Row>
               <Col xs={12} md={8}>
                 <Form.Control
@@ -89,20 +69,21 @@ const SearchBooks = () => {
           </Form>
         </Container>
       </div>
+
       <Container>
         <h2 className='pt-5'>
-          {searchedBooks.length
-            ? `Viewing ${searchedBooks.length} results:`
+          {books.length
+            ? `Viewing ${books.length} results:`
             : 'Search for a book to begin'}
         </h2>
         <Row>
-          {searchedBooks.map((book) => {
+          {books.map((book) => {
             return (
-              <Col md="4" key={book.bookId}>
+              <Col md="4" key={book}>
                 <Card border='dark'>
-                {book.imageLinks?.thumbnail && ( 
-                <Card.Img src={book.imageLinks?.thumbnail} alt={`The cover for ${book.title}`} variant='top' />
-              )}
+                  {book.image ? (
+                    <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' />
+                  ) : null}
                   <Card.Body>
                     <Card.Title>{book.title}</Card.Title>
                     <p className='small'>Authors: {book.authors}</p>
