@@ -43,6 +43,19 @@ const SearchBooks = () => {
     }
   };
 
+  // query ExampleQuery {
+  //   me {
+  //     _id
+  //     savedBooks {
+  //       author
+  //       bookId
+  //       image
+  //       link
+  //       title
+  //     }
+  //   }
+  // }
+
   return (
     <>
       <div className="text-light bg-dark p-5">
@@ -77,9 +90,10 @@ const SearchBooks = () => {
             : 'Search for a book to begin'}
         </h2>
         <Row>
-          {books.map((book) => {
+          {books.map(({volumeInfo:book}, i) => {
+            console.log(book)
             return (
-              <Col md="4" key={book}>
+              <Col md="4" key={i}>
                 <Card border='dark'>
                   {book.image ? (
                     <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' />
