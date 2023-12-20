@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
 import { REMOVE_BOOK } from '../utils/mutations';
 import Auth from '../utils/auth';
@@ -11,8 +11,6 @@ import {
   Card,
   Row
 } from 'react-bootstrap';
-
-
 
 const SavedBooks = () => {
   const { loading, data } = useQuery(GET_ME, { variables: { user: userData } });

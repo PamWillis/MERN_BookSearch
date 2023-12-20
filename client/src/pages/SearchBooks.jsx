@@ -1,20 +1,30 @@
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
 import Auth from '../utils/auth';
 import { Container, Col, Form, Button, Card, Row } from 'react-bootstrap';
 
 const SearchBooks = () => {
-  const [handleSaveBook] = useMutation(SAVE_BOOK);
+  const [formState, setFormState] = useState({
+    BookInput: '',
+  });
 
-  async function handleSaveBook(bookId) {
-    if (loading) return 'Saving...';
-    if (error) return `Save error! ${error.message}`;
+  // const [searchInput, setSearchInput] = useState('');
+  // const [searchedBooks, setSearchedBooks] = useState([]);
 
-    try {
-      await handleSaveBook({ variables: { bookId } });
-    } catch (err) {
-      console.error(err);
-    }
+  const [saveBook, { error, data }] = useMutation(SAVE_BOOK);
+
+  async function handleSaveBook(event) {
+    const { name, value } = event.target;
+
+    setFormState({
+      ...formState,
+      [name]: value,
+    });
+  };
+
+  async function handleFormSubmit(event) {
+    event.preventDefault();
+    console.log(formState);
   }
 
   return (
