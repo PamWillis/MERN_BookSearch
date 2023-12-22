@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import App from './App'
+import ErrorPage from './pages/ErrorPage'
 import SearchBooks from './pages/SearchBooks'
 import LoginForm from './pages/LoginForm'
 import SignupForm from './pages/SignupForm'
