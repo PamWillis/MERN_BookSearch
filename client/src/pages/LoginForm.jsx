@@ -21,7 +21,7 @@ const LoginForm = (props) => {
   // submit form
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    console.log(formState);
+
     try {
       const { data } = await login({
         variables: { ...formState },
@@ -77,6 +77,11 @@ const LoginForm = (props) => {
           Submit
         </Button>
       </Form>
+      {error && (
+              <div className="my-3 p-3 bg-danger text-white">
+                {error.message}
+              </div>
+            )}
     </>
   );
 };

@@ -43,18 +43,6 @@ const SearchBooks = () => {
     }
   };
 
-  // query ExampleQuery {
-  //   me {
-  //     _id
-  //     savedBooks {
-  //       author
-  //       bookId
-  //       image
-  //       link
-  //       title
-  //     }
-  //   }
-  // }
 
   return (
     <>
