@@ -1,43 +1,45 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, Nav, Container, Modal, Tab } from 'react-bootstrap';
+import { Navbar as BootstrapNavbar, Nav, Container, Modal, Tab } from 'react-bootstrap';
 import SignUpForm from '../pages/SignupForm';
 import LoginForm from '../pages/LoginForm';
 
 import Auth from '../utils/auth';
 
 const AppNavbar = () => {
-  // set modal display state
   const [showModal, setShowModal] = useState(false);
+
+  const handleLoginSignupClick = () => {
+    setShowModal(true);
+  };
 
   return (
     <>
-      <Navbar bg='dark' variant='dark' expand='lg'>
+      <BootstrapNavbar bg='dark' variant='dark' expand='lg'>
         <Container fluid>
-          <Navbar.Brand as={Link} to='/'>
+          <BootstrapNavbar.Brand as={Link} to='/'>
             Google Books Search
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls='navbar' />
-          <Navbar.Collapse id='navbar' className='justify-content-end'>
+          </BootstrapNavbar.Brand>
+          <BootstrapNavbar.Toggle aria-controls='navbar' />
+          <BootstrapNavbar.Collapse id='navbar' className='justify-content-end'>
             <Nav>
               <Nav.Link as={Link} to='/'>
                 Search For Books
               </Nav.Link>
-              {/* if user is logged in show saved books and logout */}
               {Auth.loggedIn() ? (
                 <>
-                  <Nav.Link as={Link} to='/saved'>
+                  <Nav.Link as={Link} to='/savedBooks'>
                     See Your Books
                   </Nav.Link>
-                  <Nav.Link onClick={Auth.logout}>Logout</Nav.Link>
+                  <Nav.Link onClick={logout}>Logout</Nav.Link>
                 </>
               ) : (
-                <Nav.Link onClick={() => setShowModal(true)}>Login/Sign Up</Nav.Link>
+                <Nav.Link onClick={handleLoginSignupClick}>Login/Sign Up</Nav.Link>
               )}
             </Nav>
-          </Navbar.Collapse>
+          </BootstrapNavbar.Collapse>
         </Container>
-      </Navbar>
+      </BootstrapNavbar>
       {/* set modal data up */}
       <Modal
         size='lg'

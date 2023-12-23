@@ -1,22 +1,32 @@
-// see SignupForm.js for comments
-import { useState } from 'react';
-import { Form, Button, Alert } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Form, Button } from 'react-bootstrap';
+import { useMutation } from '@apollo/client';
 import { LOGIN_USER } from '../utils/mutations';
 import Auth from '../utils/auth';
 
-const LoginForm = (props) => {
-  const [formState, setFormState] = useState({ email: '', password: '' });
+const LoginForm = () => {
+  const [formState, setFormState] = useState({
+    email: '', 
+    password: '',
+  });
+  const [validated, setValidated] = useState(false); 
   const [login, { error, data }] = useMutation(LOGIN_USER);
 
   // update state based on form input changes
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
+  const handleInputChange = async (event) => {
+    event.preventDefault();
 
-    setFormState({
-      ...formState,
-      [name]: value,
-    });
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+    } else {
+      // Your form submission logic (call login mutation, etc.)
+      // Remember to handle validation and form submission separately based on your requirements
+    }
+
+    setValidated(true);
   };
+
 
   // submit form
   const handleFormSubmit = async (event) => {
@@ -49,7 +59,7 @@ const LoginForm = (props) => {
             placeholder='Your email'
             name='email'
             onChange={handleInputChange}
-            value={userFormData.email}
+            value={formState.email}
             required
           />
           <Form.Control.Feedback type='invalid'>Email is required!</Form.Control.Feedback>
@@ -62,13 +72,13 @@ const LoginForm = (props) => {
             placeholder='Your password'
             name='password'
             onChange={handleInputChange}
-            value={userFormData.password}
+            value={formState.password}
             required
           />
           <Form.Control.Feedback type='invalid'>Password is required!</Form.Control.Feedback>
         </Form.Group>
         <Button
-          disabled={!(userFormData.email && userFormData.password)}
+          disabled={!(formState.email && formState.password)}
           type='submit'
           variant='success'>
           Submit
