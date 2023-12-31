@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "watch": "nodemon server.js",
-    "seed": "node seeders/seed.js"
+    "seed": "node seeders/seed.js",
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +21,9 @@
     "mongoose": "^7.0.2",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.1",
-    "jwt-decode": "^3.1.2"
+    "jwt-decode": "^3.1.2",
+    "happy-dom": "^9.20.3"
+
   },
   "devDependencies": {
     "@types/react": "^18.0.37",

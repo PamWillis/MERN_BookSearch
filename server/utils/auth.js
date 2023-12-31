@@ -42,4 +42,14 @@ module.exports = {
 
       return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
     },
+    logout: function () {
+      // Check if localStorage is available (browser environment)
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('id_token');
+      } else {
+        // Handle non-browser environment (e.g., server-side)
+        console.log('Logout not supported in this environment.');
+      }
+    },
   };
+  

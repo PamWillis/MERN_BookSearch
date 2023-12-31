@@ -4,15 +4,18 @@ import { Navbar as BootstrapNavbar, Nav, Container, Modal, Tab } from 'react-boo
 import SignUpForm from '../pages/SignupForm';
 import LoginForm from '../pages/LoginForm';
 
-import Auth from '../utils/auth';
+import AuthService from '../utils/auth';
 
 const AppNavbar = () => {
   const [showModal, setShowModal] = useState(false);
 
   const handleLoginSignupClick = () => {
     setShowModal(true);
-  };
-
+  }
+  const handleLogout = () => {
+    // Use the logout function from AuthService
+    AuthService.logout();
+  }
   return (
     <>
       <BootstrapNavbar bg='dark' variant='dark' expand='lg'>
@@ -26,12 +29,12 @@ const AppNavbar = () => {
               <Nav.Link as={Link} to='/'>
                 Search For Books
               </Nav.Link>
-              {Auth.loggedIn() ? (
+              {AuthService.loggedIn() ? (
                 <>
                   <Nav.Link as={Link} to='/savedBooks'>
                     See Your Books
                   </Nav.Link>
-                  <Nav.Link onClick={logout}>Logout</Nav.Link>
+                  <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
                 </>
               ) : (
                 <Nav.Link onClick={handleLoginSignupClick}>Login/Sign Up</Nav.Link>

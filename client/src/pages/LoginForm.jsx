@@ -13,20 +13,14 @@ const LoginForm = () => {
   const [login, { error, data }] = useMutation(LOGIN_USER);
 
   // update state based on form input changes
-  const handleInputChange = async (event) => {
-    event.preventDefault();
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
 
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.stopPropagation();
-    } else {
-      // Your form submission logic (call login mutation, etc.)
-      // Remember to handle validation and form submission separately based on your requirements
-    }
-
-    setValidated(true);
+    setFormState((prevFormState) => ({
+      ...prevFormState,
+      [name]: value,
+    }));
   };
-
 
   // submit form
   const handleFormSubmit = async (event) => {
@@ -51,7 +45,7 @@ const LoginForm = () => {
 
   return (
     <>
-      <Form noValidate validated={validated} onSubmit={handleFormSubmit}>
+      <Form onSubmit={handleFormSubmit}>
         <Form.Group className='mb-3'>
           <Form.Label htmlFor='email'>Email</Form.Label>
           <Form.Control

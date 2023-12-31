@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { useMutation } from "@apollo/client";
 import { ADD_USER } from "../utils/mutations";
-import Auth from '../utils/auth';
+import AuthService from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
 
+
+
 const SignupForm = () => {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [formState, setFormState] = useState({
     username: '',
     email: '',
@@ -38,8 +40,11 @@ const SignupForm = () => {
           variables: { ...formState }
         });
 
-        // Assume your server sends back a token in the response
-        const token = data.signup.token;
+        // Log the data to the console to inspect its structure
+        console.log('Data from server:', data);
+
+        // Assuming your server response has a structure like { addUser: { token: 'your_token', user: { _id, username } } }
+        const { token, user } = data.addUser;
 
         // Store the token in your authentication system (e.g., localStorage, cookies, etc.)
         // This depends on how you've implemented your Auth system
@@ -47,19 +52,23 @@ const SignupForm = () => {
 
         // Clear form values
         setFormState({
-          username: '',
-          email: '',
-          password: ''
+          username: user.username,
+          email: formState.email,
+          password: formState.password,
         });
 
         // Redirect to the login page upon successful signup
-        history.push('/login');
+        navigate.push('/login');
+
+        // Logout to clear the token from client storage
+        AuthService.logout();
       } catch (error) {
         console.error(error);
 
         // Handle the error (show an error message, etc.)
-        setShowAlert(true);
+        setShowAlert(`Error: ${error.message}`);
       }
+      console.log('After signup code');
     }
 
     setValidated(true);
