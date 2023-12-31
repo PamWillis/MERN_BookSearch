@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client';
 import { useMutation } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
 import { REMOVE_BOOK } from '../utils/mutations';
-import Auth from '../utils/auth';
+import AuthService from '../utils/auth';
 import {
   Container,
   Col,
@@ -13,7 +13,9 @@ import {
 } from 'react-bootstrap';
 
 const SavedBooks = () => {
-  const { loading, data } = useQuery(GET_ME, { variables: { user: userData } });
+  // Move userData definition before using it in the query
+  const { loading, data } = useQuery(GET_ME);
+  const userData = data?.Me || {};
 
   const [removeBookMutation, { loading: removeLoading, error: removeError }] = useMutation(REMOVE_BOOK);
 
@@ -33,7 +35,6 @@ const SavedBooks = () => {
     return <h2>Loading...</h2>;
   }
 
-  const userData = data?.Me || {};
   return (
     <>
       <div fluid className="text-light bg-dark p-5">
@@ -50,8 +51,8 @@ const SavedBooks = () => {
         <Row>
           {userData.savedBooks.map((book) => {
             return (
-              <Col md="4">
-                <Card key={book.bookId} border='dark'>
+              <Col md="4" key={book.bookId}>
+                <Card border='dark'>
                   {book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}
                   <Card.Body>
                     <Card.Title>{book.title}</Card.Title>

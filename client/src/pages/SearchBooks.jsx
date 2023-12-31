@@ -1,8 +1,9 @@
 import { gql, useMutation } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
-import Auth from '../utils/auth';
+import AuthService from '../utils/auth';
 import { Container, Col, Form, Button, Card, Row } from 'react-bootstrap';
 import React, { useState, useEffect } from "react";
+
 
 const SearchBooks = () => {
   const [saveBook, { loading: saveLoading, error }] = useMutation(SAVE_BOOK);
@@ -10,14 +11,37 @@ const SearchBooks = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  async function handleSaveBook(bookId) {
-    if (saveLoading) return 'Saving...';
-    if (error) return `Save error! ${error.message}`;
+    // You need to get the savedBookIds from your userData or some other source
+  // Replace this with the actual logic to fetch the savedBookIds
+  const savedBookIds = []; // Replace with your logic
 
+  async function handleSaveBook(bookId) {
+    if (!AuthService.loggedIn()) {
+      // User is not authenticated, handle accordingly (redirect to login, show a message, etc.)
+      return;
+    }
+  
+    if (saveLoading) {
+      // Save is already in progress, handle accordingly
+      return;
+    }
+  
     try {
-      await saveBook({ variables: { bookId } });
+      // Assuming you have user data with the user's ID (replace with your actual logic)
+      const userData = AuthService.GET_ME();
+      const userId = userData._id;
+  
+      await saveBook({
+        variables: {
+          bookId,
+          userId,
+        },
+      });
+  
+      // Update the UI or perform any additional actions
     } catch (err) {
       console.error(err);
+      // Handle the error (show a message, log, etc.)
     }
   }
 
@@ -31,6 +55,7 @@ const SearchBooks = () => {
 
       if (data.items) {
         setBooks(data.items);
+        console.log(data.items)
       } else {
         setBooks([]);
       }
@@ -78,19 +103,19 @@ const SearchBooks = () => {
             : 'Search for a book to begin'}
         </h2>
         <Row>
-          {books.map(({volumeInfo:book}, i) => {
+        {books.map(({ volumeInfo: book }, i) => {
             console.log(book)
             return (
               <Col md="4" key={i}>
                 <Card border='dark'>
-                  {book.image ? (
-                    <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' />
+                {book.imageLinks && book.imageLinks.smallThumbnail ? (
+                  <Card.Img src={book.imageLinks.smallThumbnail} alt={`The cover for ${book.title}`} variant='top' />
                   ) : null}
                   <Card.Body>
                     <Card.Title>{book.title}</Card.Title>
                     <p className='small'>Authors: {book.authors}</p>
                     <Card.Text>{book.description}</Card.Text>
-                    {Auth.loggedIn() && (
+                    {AuthService.loggedIn() && (
                       <Button
                         disabled={savedBookIds?.some((savedBookId) => savedBookId === book.bookId)}
                         className='btn-block btn-info'
