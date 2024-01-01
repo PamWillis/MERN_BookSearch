@@ -6,9 +6,16 @@ const typeDefs = `#graphql
     password: String
     bookCount: Int
     savedBooks: [Book]
+    token: String  # Added, needed to save books
+    user: UserType  # Add this line to include the user field in save books
   }
+  type UserType {
+  _id: ID
+  username: String
+  # Add other fields as needed
+}
   type Book {
-    bookId: Int
+    bookId: String!
     author: [String]
     description: String
     title: String
@@ -24,7 +31,7 @@ const typeDefs = `#graphql
     author: [String!]!
     description: String!
     title: String!
-    bookId: Int!
+    bookId: String!
     image: String!
     link: String!
   }

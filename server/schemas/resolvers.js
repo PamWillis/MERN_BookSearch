@@ -52,7 +52,7 @@ const resolvers = {
           }
         );
       }
-      throw AuthenticationError;
+      throw new AuthenticationError('Authentication error: User not logged in');
     },
 
     removeBook: async (parent, { book }, context) => {

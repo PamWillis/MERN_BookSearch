@@ -44,6 +44,9 @@ class AuthService {
     // this will reload the page and reset the state of the application
     window.location.assign('/');
   }
+  saveBook() {
+    return decode(this.getToken());
+  }
 }
 
 export default new AuthService();
