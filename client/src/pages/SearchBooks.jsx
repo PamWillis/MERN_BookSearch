@@ -15,8 +15,7 @@ import {
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 
 const SearchBooks = () => {
-  
-  const { userData } = AuthService.useAuth(); // Replace with the actual method or variable from your authentication system
+
   // create state for holding returned google api data
   const [searchedBooks, setSearchedBooks] = useState([]);
   // create state for holding our search field data
@@ -28,9 +27,10 @@ const SearchBooks = () => {
   // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
   useEffect(() => {
     return () => saveBookIds(savedBookIds);
-  }, [savedBookIds]); // Include savedBookIds in the dependency array
+  }); // Include savedBookIds in the dependency array
 
   const handleFormSubmit = async (event) => {
+    event.preventDefault();
     if (!searchInput) {
       return false;
     }
@@ -68,39 +68,21 @@ const SearchBooks = () => {
     // get token
     const token = AuthService.loggedIn() ? AuthService.getToken() : null;
 
-    // Ensure the authors array is defined
-    const authorArray = Array.isArray(bookToSave.authors)
-      ? bookToSave.authors
-      : bookToSave.authors
-        ? [bookToSave.authors]
-        : [];
-
     if (!token) {
       return false;
     }
 
     // Call the mutation here, assuming `saveBook` is a GraphQL mutation function
-    const response = await saveBook({
+    const { Data } = await saveBook({
       variables: {
-        author: authorArray,
-        description: bookToSave.description,
-        title: bookToSave.title,
-        bookId: bookToSave.bookId,
-        image: bookToSave.image, // Fixed reference to image property
-        link: `https://www.googleapis.com/books/v1/volumes?q=${searchInput}`,
-        userId: userData._id, // Replace with the actual user ID variable
+  book: {...bookToSave}
       },
     });
 
-    // Check the response for errors or handle success
-    if (response.errors) {
-      console.error(response.errors);
-    } else {
       // If the book successfully saves to the user's account, save the book ID to state
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
-    }
+    
   };
-
 
   return (
     <>
@@ -136,18 +118,12 @@ const SearchBooks = () => {
             : 'Search for a book to begin'}
         </h2>
         <Row>
-          {searchedBooks.map(({ volumeInfo: book }, i) => {
-            console.log(book)
-            // Add additional checks for book and its properties
-            if (!book || !book.imageLinks || !book.imageLinks.thumbnail) {
-              // If any of these properties are undefined, skip rendering this book
-              return null;
-            }
+          {searchedBooks.map((book) => {
             return (
-              <Col md="4" key={i}>
+              <Col md="4" key={book.bookId}>
                 <Card border='dark'>
-                  {book.imageLinks && book.imageLinks.thumbnail ? (
-                    <Card.Img src={book.imageLinks.thumbnail} alt={`The cover for ${book.title}`} variant='top' />
+                  {book.image ? (
+                    <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' />
                   ) : null}
                   <Card.Body>
                     <Card.Title>{book.title}</Card.Title>
@@ -171,8 +147,7 @@ const SearchBooks = () => {
         </Row>
       </Container>
     </>
-  )
+  );
 };
-
 
 export default SearchBooks;

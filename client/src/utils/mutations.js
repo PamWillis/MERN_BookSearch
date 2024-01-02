@@ -26,30 +26,19 @@ export const ADD_USER = gql`
 `;
 
 export const SAVE_BOOK = gql`
-  # Increments a back-end counter and gets its resulting value
-  mutation saveBook(
-  $author: [String!]!,
-  $description: String!,
-  $title: String!,
-  $bookId: String!,
-  $image: String!,
-  $link: String!
-) {
-  saveBook(
-    book: {
-      author: $author,
-      description: $description,
-      title: $title,
-      bookId: $bookId,
-      image: $image,
-      link: $link
-    }
-  ) {
-    token
-    user {
-      _id
-      username
-    }
+  mutation saveBook($book: BookInput) {
+  saveBook(book: $book) {
+   _id
+   username
+   email
+   savedBooks{
+    bookId
+    authors
+    description
+    title
+    image
+    link
+   }
   }
 }
 `;

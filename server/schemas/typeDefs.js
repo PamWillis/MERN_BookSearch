@@ -6,8 +6,6 @@ const typeDefs = `#graphql
     password: String
     bookCount: Int
     savedBooks: [Book]
-    token: String  # Added, needed to save books
-    user: UserType  # Add this line to include the user field in save books
   }
   type UserType {
   _id: ID
@@ -16,7 +14,7 @@ const typeDefs = `#graphql
 }
   type Book {
     bookId: String!
-    author: [String]
+    authors: [String]
     description: String
     title: String
     image: String
@@ -28,12 +26,12 @@ const typeDefs = `#graphql
   }
 
   input BookInput {
-    author: [String!]!
+    authors: [String!]!
     description: String!
     title: String!
     bookId: String!
     image: String!
-    link: String!
+    link: String
   }
 
   type Query {
@@ -43,7 +41,7 @@ const typeDefs = `#graphql
   type Mutation {
     login(email: String!, password: String!): Auth
     addUser(username: String!, email: String!, password: String!): Auth
-    saveBook(book: BookInput!): User
+    saveBook(book: BookInput): User
     removeBook(bookId: String!): User
   }
   `;
