@@ -48,7 +48,7 @@ const SignupForm = () => {
 
         // Store the token in your authentication system (e.g., localStorage, cookies, etc.)
         // This depends on how you've implemented your Auth system
-        Auth.login(token);
+        AuthService.login(token);
 
         // Clear form values
         setFormState({
