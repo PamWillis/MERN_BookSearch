@@ -13,7 +13,7 @@ const SearchBooks = (props) => {
 
   // You need to get the savedBookIds from your userData or some other source
   // Replace this with the actual logic to fetch the savedBookIds
-  const savedBookIds = []; // Replace with your logic
+  const savedBookIds = props.userData?.savedBooks.map((book) => book.bookId) || []; // Replace with your logic
 
   async function handleSaveBook(bookId, searchInput) {
     if (!AuthService.loggedIn()) {

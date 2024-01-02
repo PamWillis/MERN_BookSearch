@@ -44,7 +44,7 @@ const typeDefs = `#graphql
     login(email: String!, password: String!): Auth
     addUser(username: String!, email: String!, password: String!): Auth
     saveBook(book: BookInput!): User
-    removeBook(bookId: Int!): User
+    removeBook(bookId: String!): User
   }
   `;
 

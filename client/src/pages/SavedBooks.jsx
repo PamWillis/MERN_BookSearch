@@ -2,11 +2,9 @@ import { gql, useQuery } from '@apollo/client';
 import { useMutation } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
 import { REMOVE_BOOK } from '../utils/mutations';
-import AuthService from '../utils/auth';
 import {
   Container,
   Col,
-  Form,
   Button,
   Card,
   Row
@@ -16,6 +14,7 @@ const SavedBooks = () => {
   // Move userData definition before using it in the query
   const { loading, data } = useQuery(GET_ME);
   const userData = data?.Me || {};
+
 
   const [removeBookMutation, { loading: removeLoading, error: removeError }] = useMutation(REMOVE_BOOK);
 
@@ -37,19 +36,19 @@ const SavedBooks = () => {
 
   return (
     <>
-      <div fluid className="text-light bg-dark p-5">
+     <div className="text-light bg-dark p-5 fluid">
         <Container>
           <h1>Viewing saved books!</h1>
         </Container>
       </div>
       <Container>
         <h2 className='pt-5'>
-          {userData.savedBooks.length
+          {userData.savedBooks && userData.savedBooks.length
             ? `Viewing ${userData.savedBooks.length} saved ${userData.savedBooks.length === 1 ? 'book' : 'books'}:`
             : 'You have no saved books!'}
         </h2>
         <Row>
-          {userData.savedBooks.map((book) => {
+        {userData.savedBooks && userData.savedBooks.map((book) => {
             return (
               <Col md="4" key={book.bookId}>
                 <Card border='dark'>

@@ -26,7 +26,7 @@ const router = createBrowserRouter([
         path: '/signup',
         element: <SignupForm />
       }, {
-        path: '/savebooks',
+        path: '/savedbooks',
         element: <SavedBooks />
       }
     ]

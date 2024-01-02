@@ -55,12 +55,12 @@ const resolvers = {
       throw new AuthenticationError('Authentication error: User not logged in');
     },
 
-    removeBook: async (parent, { book }, context) => {
+    removeBook: async (parent, { bookId }, context) => {
       if (context.user) {
         return User.findOneAndUpdate(
           { _id: context.user._id },
           {
-            $pull: { book: book },
+            $pull: { savedBooks: { bookId: bookId } },
           },
           {
             new: true,
@@ -68,7 +68,7 @@ const resolvers = {
           }
         );
       }
-      throw AuthenticationError;
+      throw new AuthenticationError('You are not authenticated.');
     },
   },
 };
