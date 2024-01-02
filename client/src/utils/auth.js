@@ -11,6 +11,12 @@ class AuthService {
     // Return decoded user information
     return this.getProfile();
   }
+  useAuth() {
+    const token = this.getToken();
+    const user = token ? decode(token) : null;
+
+    return user;
+  }
   // check if user's logged in
   loggedIn() {
     // Checks if there is a saved token and it's still valid

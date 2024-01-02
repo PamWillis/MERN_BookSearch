@@ -24,5 +24,6 @@
     "apollo-server-express": "^3.13.0",
     "graphql": "^16.8.1",
     "react-router-dom": "^6.21.1"
+  
   }
 }

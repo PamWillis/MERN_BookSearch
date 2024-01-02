@@ -15,7 +15,8 @@ import {
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 
 const SearchBooks = () => {
-  const { userData } = useAuth(); // Replace with the actual method or variable from your authentication system
+  
+  const { userData } = AuthService.useAuth(); // Replace with the actual method or variable from your authentication system
   // create state for holding returned google api data
   const [searchedBooks, setSearchedBooks] = useState([]);
   // create state for holding our search field data
@@ -27,40 +28,36 @@ const SearchBooks = () => {
   // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
   useEffect(() => {
     return () => saveBookIds(savedBookIds);
-  });
+  }, [savedBookIds]); // Include savedBookIds in the dependency array
 
-  // create method to search for books and set state on form submit
   const handleFormSubmit = async (event) => {
     if (!searchInput) {
       return false;
     }
 
     try {
-      // Fetch and process data
       const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${searchInput}`);
-      // Ensure the response is OK before attempting to parse the JSON
       if (!response.ok) {
         throw new Error('something went wrong!');
       }
 
       const { items } = await response.json();
+      console.log('Books data from API:', items);
+
       const bookData = items.map((book) => ({
         bookId: book.id,
         authors: book.volumeInfo.authors || ['No author to display'],
         title: book.volumeInfo.title,
         description: book.volumeInfo.description,
         image: book.volumeInfo.imageLinks?.thumbnail || '',
-
-        
       }));
 
-      // Move setSearchedBooks inside the try block
+      console.log('Processed book data:', bookData);
+
       setSearchedBooks(bookData);
-
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching or processing books data:', err);
     }
-
   };
 
   // create function to handle saving a book to our database
