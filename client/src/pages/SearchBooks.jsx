@@ -49,13 +49,13 @@ const SearchBooks = () => {
         description: book.volumeInfo.description,
         image: book.volumeInfo.imageLinks?.thumbnail || '',
       }));
-      // Move setSearchedBooks inside the try block
-      setSearchedBooks(bookData);
+
 
     } catch (err) {
       console.error(err);
     }
-
+      // Move setSearchedBooks inside the try block
+      setSearchedBooks(bookData);
   };
 
   // create function to handle saving a book to our database
