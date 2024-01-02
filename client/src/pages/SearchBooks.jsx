@@ -29,23 +29,19 @@ const SearchBooks = () => {
 
   // create method to search for books and set state on form submit
   const handleFormSubmit = async (event) => {
-    event.preventDefault();
-
     if (!searchInput) {
       return false;
     }
 
     try {
-      const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=${searchInput}`
-      );
-
+      // Fetch and process data
+      const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${searchInput}`);
+      // Ensure the response is OK before attempting to parse the JSON
       if (!response.ok) {
         throw new Error('something went wrong!');
       }
 
       const { items } = await response.json();
-
       const bookData = items.map((book) => ({
         bookId: book.id,
         authors: book.volumeInfo.authors || ['No author to display'],
@@ -53,12 +49,13 @@ const SearchBooks = () => {
         description: book.volumeInfo.description,
         image: book.volumeInfo.imageLinks?.thumbnail || '',
       }));
-
+      // Move setSearchedBooks inside the try block
       setSearchedBooks(bookData);
-      setSearchInput('');
+
     } catch (err) {
       console.error(err);
     }
+
   };
 
   // create function to handle saving a book to our database
@@ -67,7 +64,7 @@ const SearchBooks = () => {
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
 
     // get token
-    const token = Auth.loggedIn() ? Auth.getToken() : null;
+    const token = AuthService.loggedIn() ? AuthService.getToken() : null;
 
     // Ensure the authors array is defined
     const authorArray = Array.isArray(bookToSave.authors)
@@ -89,7 +86,7 @@ const SearchBooks = () => {
         bookId: bookToSave.bookId,
         image: bookToSave.image, // Fixed reference to image property
         link: `https://www.googleapis.com/books/v1/volumes?q=${searchInput}`,
-        userId: ID, // Replace with the actual user ID variable
+        userId: user._id, // Replace with the actual user ID variable
       },
     });
 
