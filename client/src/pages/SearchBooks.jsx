@@ -16,6 +16,7 @@ const SearchBooks = (props) => {
   const savedBookIds = props.userData?.savedBooks.map((book) => book.bookId) || []; // Replace with your logic
 
   async function handleSaveBook(bookId, searchInput) {
+    console.log('Saving book:', bookId, searchInput);
     if (!AuthService.loggedIn()) {
       // User is not authenticated, handle accordingly (redirect to login, show a message, etc.)
       return;
