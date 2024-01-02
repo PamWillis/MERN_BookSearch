@@ -1,7 +1,8 @@
+import AuthService from '../utils/auth';
 import { useState, useEffect } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
-import AuthService from '../utils/auth';
+
 import {
   Container,
   Col,
@@ -14,6 +15,7 @@ import {
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 
 const SearchBooks = () => {
+  const { userData } = useAuth(); // Replace with the actual method or variable from your authentication system
   // create state for holding returned google api data
   const [searchedBooks, setSearchedBooks] = useState([]);
   // create state for holding our search field data
@@ -48,14 +50,17 @@ const SearchBooks = () => {
         title: book.volumeInfo.title,
         description: book.volumeInfo.description,
         image: book.volumeInfo.imageLinks?.thumbnail || '',
+
+        
       }));
 
+      // Move setSearchedBooks inside the try block
+      setSearchedBooks(bookData);
 
     } catch (err) {
       console.error(err);
     }
-      // Move setSearchedBooks inside the try block
-      setSearchedBooks(bookData);
+
   };
 
   // create function to handle saving a book to our database
@@ -86,7 +91,7 @@ const SearchBooks = () => {
         bookId: bookToSave.bookId,
         image: bookToSave.image, // Fixed reference to image property
         link: `https://www.googleapis.com/books/v1/volumes?q=${searchInput}`,
-        userId: user._id, // Replace with the actual user ID variable
+        userId: userData._id, // Replace with the actual user ID variable
       },
     });
 

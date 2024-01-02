@@ -1,10 +1,11 @@
+import AuthService from '../utils/auth';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar as BootstrapNavbar, Nav, Container, Modal, Tab } from 'react-bootstrap';
 import SignUpForm from '../pages/SignupForm';
 import LoginForm from '../pages/LoginForm';
 
-import AuthService from '../utils/auth';
+
 
 const AppNavbar = () => {
   const [showModal, setShowModal] = useState(false);

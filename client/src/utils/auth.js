@@ -7,7 +7,10 @@ class AuthService {
   getProfile() {
     return decode(this.getToken());
   }
-
+  saveBook() {
+    // Return decoded user information
+    return this.getProfile();
+  }
   // check if user's logged in
   loggedIn() {
     // Checks if there is a saved token and it's still valid
@@ -44,9 +47,7 @@ class AuthService {
     // this will reload the page and reset the state of the application
     window.location.assign('/');
   }
-  saveBook() {
-    return decode(this.getToken());
-  }
+
 }
 
 export default new AuthService();

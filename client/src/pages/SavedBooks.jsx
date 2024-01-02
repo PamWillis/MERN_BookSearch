@@ -1,3 +1,4 @@
+import AuthService from '../utils/auth';
 import { gql, useQuery } from '@apollo/client';
 import { useMutation } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
@@ -13,7 +14,7 @@ import {
 const SavedBooks = () => {
   // Move userData definition before using it in the query
   const { loading, data } = useQuery(GET_ME);
-  const userData = data?.Me || {};
+  const userData = data?.me || {};
 
 
   const [removeBookMutation, { loading: removeLoading, error: removeError }] = useMutation(REMOVE_BOOK);
