@@ -1,8 +1,8 @@
 import AuthService from '../utils/auth';
-import { useState, useEffect } from 'react';
+import { useQuery } from '@apollo/client';
 import { useMutation } from '@apollo/client';
 import { REMOVE_BOOK } from '../utils/mutations';
-
+import { GET_ME } from '../utils/queries';
 
 import {
   Container,
@@ -13,31 +13,29 @@ import {
 } from 'react-bootstrap';
 
 
+import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 
 const SavedBooks = () => {
-  const [userData, setUserData] = useState({});
+  // Execute the query on component load
+  const { loading, data } = useQuery(GET_ME);
 
-  // use this to determine if `useEffect()` hook needs to run again
+  // Check if data is still loading
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  // Check if data exists before attempting to access its properties
+  const userData = data?.me || {}; // Use an empty object as a fallback
   const userDataLength = Object.keys(userData).length;
-  // create state to hold saved bookId values
-  const [savedBookIds, setSavedBookIds] = useState([savedBookIds]);
-  // const [savedBookIds, setSavedBookIds] = useState(savedBookIds());
+  const savedBooks = userData.savedBooks || [];
 
-  const [removeBook, { error }] = useMutation(REMOVE_BOOK);
-
-  useEffect(() => {
-    const removedBook = savedBookIds.find(bookId => bookId === removedBook);
-    return () => removeBook(removedBook);
-  }, [savedBookIds]);
 
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
+    const [removeBook, { error }] = useMutation(REMOVE_BOOK);
     
-    // create original state for which book was chosen to remove
-    const [chosenBook, setChosenBook] = useState([]);
-    // create state for holding our chosen field data
-    const [chosenInput, setChosenInput] = useState('');
+
 
     // find the book in `savedBooks` state by the matching id
     const bookToRemove = chosenBook.find((book) => book.bookId === bookId);
