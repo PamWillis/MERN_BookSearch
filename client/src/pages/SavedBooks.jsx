@@ -1,5 +1,9 @@
 import AuthService from '../utils/auth';
 import { useState, useEffect } from 'react';
+import { useMutation } from '@apollo/client';
+import { REMOVE_BOOK } from '../utils/mutations';
+import { SAVE_BOOK } from '../utils/mutations';
+
 import {
   Container,
   Card,
@@ -8,15 +12,15 @@ import {
   Col
 } from 'react-bootstrap';
 
-import { getMe, deleteBook } from '../utils/API';
-
-import { removeBookId } from '../utils/localStorage';
+// import { getMe, deleteBook } from '../utils/API';
 
 const SavedBooks = () => {
   const [userData, setUserData] = useState({});
 
   // use this to determine if `useEffect()` hook needs to run again
   const userDataLength = Object.keys(userData).length;
+  // create state to hold saved bookId values
+  const [savedBookIds, setSavedBookIds] = useState(setSavedBookIds());
 
   useEffect(() => {
     const getUserData = async () => {
@@ -45,26 +49,24 @@ const SavedBooks = () => {
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
+    // find the book in `searchedBooks` state by the matching id
+    const bookToDelete = searchedBooks.find((book) => book.bookId === bookId);
+
     const token = AuthService.loggedIn() ? AuthService.getToken() : null;
 
     if (!token) {
       return false;
     }
 
-    try {
-      const response = await deleteBook(bookId, token);
+    // Call the mutation here, assuming `saveBook` is a GraphQL mutation function
+    const { Data } = await deleteBook({
+      variables: {
+        book: { ...bookToDelete }
+      },
+    });
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const updatedUser = await response.json();
-      setUserData(updatedUser);
-      // upon success, remove book's id from localStorage
-      removeBookId(bookId);
-    } catch (err) {
-      console.error(err);
-    }
+    // If the book successfully deleted to the user's account, save the book ID to state
+    setSavedBookIds([...savedBookIds, bookToSave.bookId]);
   };
 
   // if data isn't here yet, say so
