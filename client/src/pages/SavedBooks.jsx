@@ -4,6 +4,7 @@ import { useMutation } from '@apollo/client';
 import { REMOVE_BOOK } from '../utils/mutations';
 import { GET_ME } from '../utils/queries';
 
+
 import {
   Container,
   Card,
@@ -13,9 +14,10 @@ import {
 } from 'react-bootstrap';
 
 
-import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
-
 const SavedBooks = () => {
+  // Initialize the mutation hook outside the component body
+  const [removeBook] = useMutation(REMOVE_BOOK);
+
   // Execute the query on component load
   const { loading, data } = useQuery(GET_ME);
 
@@ -29,32 +31,31 @@ const SavedBooks = () => {
   const userDataLength = Object.keys(userData).length;
   const savedBooks = userData.savedBooks || [];
 
-
-
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
-    const [removeBook, { error }] = useMutation(REMOVE_BOOK);
-    
+    try {
+      // find the book in `savedBooks` state by the matching id
+      const bookToRemove = savedBooks.find((book) => book.bookId === bookId);
 
+      const token = AuthService.loggedIn() ? AuthService.getToken() : null;
 
-    // find the book in `savedBooks` state by the matching id
-    const bookToRemove = chosenBook.find((book) => book.bookId === bookId);
+      if (!token) {
+        return false;
+      }
 
-    const token = AuthService.loggedIn() ? AuthService.getToken() : null;
+      // Call the mutation here, assuming `removeBook` is a GraphQL mutation function
+      await removeBook({
+        variables: {
+          bookId: bookToRemove.bookId,
+        },
+        refetchQueries: [{ query: GET_ME }], // Refetch the user data after deletion
+      });
 
-    if (!token) {
-      return false;
+      // Update the state or perform any necessary actions after successful deletion
+      // For example, you might want to refetch the data to reflect the changes
+    } catch (error) {
+      console.error(error);
     }
-
-    // Call the mutation here, assuming `removeBook` is a GraphQL mutation function
-    const { Data } = await removeBook({
-      variables: {
-        bookId: id
-      },
-    });
-
-    // If the book successfully deleted to the user's account, save the book ID to state
-    setSavedBookIds([...savedBookIds, bookToRemove.bookId]);
   };
 
   // if data isn't here yet, say so
@@ -64,7 +65,7 @@ const SavedBooks = () => {
 
   return (
     <>
-      <div fluid className="text-light bg-dark p-5">
+      <div className="text-light bg-dark p-5">
         <Container>
           <h1>Viewing saved books!</h1>
         </Container>
@@ -76,23 +77,21 @@ const SavedBooks = () => {
             : 'You have no saved books!'}
         </h2>
         <Row>
-          {userData.savedBooks.map((book) => {
-            return (
-              <Col md="4">
-                <Card key={book.bookId} border='dark'>
-                  {book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}
-                  <Card.Body>
-                    <Card.Title>{book.title}</Card.Title>
-                    <p className='small'>Authors: {book.authors}</p>
-                    <Card.Text>{book.description}</Card.Text>
-                    <Button className='btn-block btn-danger' onClick={() => handleDeleteBook(book.bookId)}>
-                      Delete this Book!
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            );
-          })}
+          {savedBooks.map((book, index) => (
+            <Col key={`col-${book.bookId}`} md="4">
+              <Card key={`card-${book.bookId}-${index}`} border='dark'>
+                {book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}
+                <Card.Body>
+                  <Card.Title>{book.title}</Card.Title>
+                  <p className='small'>Authors: {book.authors}</p>
+                  <Card.Text>{book.description}</Card.Text>
+                  <Button className='btn-block btn-danger' onClick={() => handleDeleteBook(book.bookId)}>
+                    Delete this Book!
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
         </Row>
       </Container>
     </>
