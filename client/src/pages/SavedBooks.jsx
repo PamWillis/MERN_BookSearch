@@ -2,7 +2,7 @@ import AuthService from '../utils/auth';
 import { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
 import { REMOVE_BOOK } from '../utils/mutations';
-import { SAVE_BOOK } from '../utils/mutations';
+
 
 import {
   Container,
@@ -12,7 +12,7 @@ import {
   Col
 } from 'react-bootstrap';
 
-// import { getMe, deleteBook } from '../utils/API';
+
 
 const SavedBooks = () => {
   const [userData, setUserData] = useState({});
@@ -20,37 +20,27 @@ const SavedBooks = () => {
   // use this to determine if `useEffect()` hook needs to run again
   const userDataLength = Object.keys(userData).length;
   // create state to hold saved bookId values
-  const [savedBookIds, setSavedBookIds] = useState(setSavedBookIds());
+  const [savedBookIds, setSavedBookIds] = useState([savedBookIds]);
+  // const [savedBookIds, setSavedBookIds] = useState(savedBookIds());
+
+  const [removeBook, { error }] = useMutation(REMOVE_BOOK);
 
   useEffect(() => {
-    const getUserData = async () => {
-      try {
-        const token = AuthService.loggedIn() ? AuthService.getToken() : null;
+    const removedBook = savedBookIds.find(bookId => bookId === removedBook);
+    return () => removeBook(removedBook);
+  }, [savedBookIds]);
 
-        if (!token) {
-          return false;
-        }
-
-        const response = await getMe(token);
-
-        if (!response.ok) {
-          throw new Error('something went wrong!');
-        }
-
-        const user = await response.json();
-        setUserData(user);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    getUserData();
-  }, [userDataLength]);
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
-    // find the book in `searchedBooks` state by the matching id
-    const bookToDelete = searchedBooks.find((book) => book.bookId === bookId);
+    
+    // create original state for which book was chosen to remove
+    const [chosenBook, setChosenBook] = useState([]);
+    // create state for holding our chosen field data
+    const [chosenInput, setChosenInput] = useState('');
+
+    // find the book in `savedBooks` state by the matching id
+    const bookToRemove = chosenBook.find((book) => book.bookId === bookId);
 
     const token = AuthService.loggedIn() ? AuthService.getToken() : null;
 
@@ -58,15 +48,15 @@ const SavedBooks = () => {
       return false;
     }
 
-    // Call the mutation here, assuming `saveBook` is a GraphQL mutation function
-    const { Data } = await deleteBook({
+    // Call the mutation here, assuming `removeBook` is a GraphQL mutation function
+    const { Data } = await removeBook({
       variables: {
-        book: { ...bookToDelete }
+        bookId: id
       },
     });
 
     // If the book successfully deleted to the user's account, save the book ID to state
-    setSavedBookIds([...savedBookIds, bookToSave.bookId]);
+    setSavedBookIds([...savedBookIds, bookToRemove.bookId]);
   };
 
   // if data isn't here yet, say so
