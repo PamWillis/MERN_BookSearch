@@ -44,14 +44,20 @@ export const SAVE_BOOK = gql`
 `;
 export const REMOVE_BOOK = gql`
   # Increments a back-end counter and gets its resulting value
-  mutation removeBook($bookId: String!) {
-    removeBook(bookId: $bookId) {
-      token
-      user {
-        _id
-        username
-      }
-    }
+  mutation removeBook($book: ID!) {
+  saveBook(book: $book) {
+   _id
+   username
+   email
+   savedBooks{
+    bookId
+    authors
+    description
+    title
+    image
+    link
+   }
+  }
   }
 `;
 
