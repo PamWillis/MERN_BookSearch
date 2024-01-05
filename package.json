@@ -10,9 +10,7 @@
     "build": "cd client && npm run build",
     "render-build": "npm install && npm run build"
   },
-  "engines": {
-    "node": ">=18.17.1 <19.0.0"
-  },
+
   "keywords": [],
   "author": "",
   "license": "ISC",
