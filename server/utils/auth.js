@@ -14,7 +14,6 @@ module.exports = {
       code: 'UNAUTHENTICATED',
     },
   }),
-
     // function for our authenticated routes
     authMiddleware: function ({req}) {
       // allows token to be sent via  req.body,req.query or headers
