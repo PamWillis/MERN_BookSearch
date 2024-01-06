@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose');
 const bcrypt = require('bcrypt');
+const uniqueValidator = require('mongoose-unique-validator');
 
 // import schema from Book.js
 const bookSchema = require('./Book');
