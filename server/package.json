@@ -9,6 +9,9 @@
         "seed": "node seeders/seed.js",
         "test": "vitest"
     },
+    "engines": {
+        "node": ">=18.17.1 <19.0.0"
+      }
     "keywords": [],
     "author": "",
     "license": "ISC",
